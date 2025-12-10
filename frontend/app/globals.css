@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    min-height: 100vh;
+    background: radial-gradient(circle at 20% 20%, #fdfaf3 0, #f7f1e7 32%, #f3ece1 60%, #ede5d8 100%);
+    color: hsl(var(--foreground));
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  a {
+    color: hsl(var(--primary));
+  }
+
+  a:hover {
+    color: hsl(var(--primary) / 0.82);
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.18);
+  }
+
+  h1, h2, h3 {
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer base {
+  :root {
+    /* Brand palette */
+    --primary: 36 60% 69%; /* #e1bb80 */
+    --primary-foreground: 33 60% 17%; /* pairs with brand dark */
+    --secondary: 33 60% 17%; /* #352208 */
+    --secondary-foreground: 36 60% 92%;
+
+    /* Neutrals */
+    --background: 42 33% 98%;
+    --foreground: 33 25% 15%;
+    --muted: 42 25% 93%;
+    --muted-foreground: 33 15% 40%;
+    --card: 0 0% 100%;
+    --card-foreground: 33 25% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 33 25% 15%;
+
+    /* Accents */
+    --accent: 36 60% 74%;
+    --accent-foreground: 33 60% 17%;
+    --destructive: 0 72% 54%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Borders & forms */
+    --border: 33 22% 82%;
+    --input: 33 22% 82%;
+    --ring: 36 60% 50%;
+    --radius: 0.6rem;
+  }
+
+  .dark {
+    --background: 33 35% 10%;
+    --foreground: 42 30% 96%;
+    --card: 33 32% 12%;
+    --card-foreground: 42 30% 96%;
+    --popover: 33 32% 12%;
+    --popover-foreground: 42 30% 96%;
+    --primary: 36 60% 69%;
+    --primary-foreground: 33 60% 15%;
+    --secondary: 36 28% 25%;
+    --secondary-foreground: 42 30% 96%;
+    --muted: 33 20% 18%;
+    --muted-foreground: 42 25% 80%;
+    --accent: 36 60% 74%;
+    --accent-foreground: 33 60% 17%;
+    --destructive: 0 70% 46%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 33 20% 24%;
+    --input: 33 20% 24%;
+    --ring: 36 60% 62%;
+  }
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--border));
+  }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+}

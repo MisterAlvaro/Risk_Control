@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: risk-control-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - risk-control-network
+
+  db:
+    image: mysql:8.0
+    container_name: risk-control-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: risk_control
+      MYSQL_ROOT_PASSWORD: secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - risk-control-network
+
+  redis:
+    image: redis:alpine
+    container_name: risk-control-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - risk-control-network
+
+volumes:
+  dbdata:
+
+networks:
+  risk-control-network:
+    driver: bridge
