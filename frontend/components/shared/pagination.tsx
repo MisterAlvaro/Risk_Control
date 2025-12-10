@@ -34,15 +34,16 @@ export function Pagination({
   }
 
   return (
-    <div className={cn("flex items-center justify-between", className)}>
-      <div className="flex items-center gap-1">
+    <div className={cn("flex items-center justify-between gap-4", className)}>
+      <div className="flex items-center gap-2">
         <Button
           variant="outline"
           size="icon"
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
+          className="rounded-xl h-10 w-10"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-5 w-5" />
         </Button>
 
         {startPage > 1 && (
@@ -52,15 +53,15 @@ export function Pagination({
               size="icon"
               onClick={() => onPageChange(1)}
               className={cn(
-                "h-9 w-9",
-                currentPage === 1 && "bg-primary text-primary-foreground"
+                "h-10 w-10 rounded-xl font-bold",
+                currentPage === 1 && "bg-gradient-to-r from-primary/90 to-primary text-white border-primary/40"
               )}
             >
               1
             </Button>
             {startPage > 2 && (
-              <span className="flex h-9 w-9 items-center justify-center">
-                <MoreHorizontal className="h-4 w-4 text-gray-400" />
+              <span className="flex h-10 w-10 items-center justify-center">
+                <MoreHorizontal className="h-5 w-5 text-text/30" />
               </span>
             )}
           </>
@@ -73,8 +74,10 @@ export function Pagination({
             size="icon"
             onClick={() => onPageChange(page)}
             className={cn(
-              "h-9 w-9",
-              currentPage === page && "bg-primary text-primary-foreground"
+              "h-10 w-10 rounded-xl font-bold transition-all duration-300",
+              currentPage === page 
+                ? "bg-gradient-to-r from-primary/90 to-primary text-white border-primary/40 shadow-lg" 
+                : "hover:border-border/60"
             )}
           >
             {page}
@@ -112,7 +115,7 @@ export function Pagination({
         </Button>
       </div>
       
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-text/70">
         Página {currentPage} de {totalPages}
       </div>
     </div>

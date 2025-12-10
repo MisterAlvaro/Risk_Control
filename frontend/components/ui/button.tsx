@@ -15,27 +15,19 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const isSingleChild = childArray.length === 1 && React.isValidElement(childArray[0])
     const slotChild = isSingleChild ? (childArray[0] as React.ReactElement) : null
 
-    // LOG DEBUG: tipo y valor de children
-    console.log('%c[Button asChild debug] children:', 'color: orange', children)
-    console.log('%c[Button asChild debug] childArray:', 'color: orange', childArray)
-    if (asChild && !slotChild) {
-      console.error('%c[Button asChild ERROR] slotChild falsy. childArray:', 'color: red', childArray, '\nOriginal children:', children)
-    }
-    if (asChild && childArray.length !== 1) {
-      console.warn('%c[Button asChild WARN] childArray.length:', 'color: gold', childArray.length, 'VAL:', childArray)
-    }
+    // Maintain same behavior when rendering as child; no debug logs in production
 
     const baseClass = cn(
-      'inline-flex items-center justify-center whitespace-nowrap rounded-lg border text-sm font-semibold transition-all duration-150 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-sm',
+      'inline-flex items-center justify-center whitespace-nowrap rounded-md border text-sm font-semibold transition-all duration-300 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-sm active:scale-95',
       {
-        'bg-primary text-primary-foreground border-primary/70 hover:bg-primary/90 hover:shadow-md': variant === 'default',
-        'bg-secondary text-secondary-foreground border-secondary/70 hover:bg-secondary/85 hover:shadow-md': variant === 'secondary',
-        'border-destructive/70 bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:text-destructive-foreground': variant === 'destructive',
-        'border-border/80 bg-background/80 hover:bg-primary/5 hover:text-foreground': variant === 'outline',
-        'border-transparent bg-transparent hover:bg-primary/8': variant === 'ghost',
+        'bg-primary text-white border-transparent hover:bg-primary-dark hover:shadow-md hover:scale-105': variant === 'default',
+        'bg-surface text-text border border-border hover:shadow-md hover:bg-surface': variant === 'secondary',
+        'bg-danger text-white border-transparent hover:bg-danger/90 hover:shadow-md hover:scale-105': variant === 'destructive',
+        'border border-border bg-transparent hover:bg-surface hover:border-border/50': variant === 'outline',
+        'border-transparent bg-transparent hover:bg-primary-light/10 text-text hover:text-primary-dark': variant === 'ghost',
         'border-transparent bg-transparent text-primary underline-offset-4 hover:underline': variant === 'link',
-        'h-10 px-4 py-2': size === 'default',
-        'h-9 rounded-md px-3': size === 'sm',
+        'h-11 px-4 py-2.5': size === 'default',
+        'h-9 rounded-sm px-3': size === 'sm',
         'h-11 rounded-lg px-8': size === 'lg',
         'h-10 w-10 p-0': size === 'icon',
       },

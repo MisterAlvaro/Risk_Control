@@ -10,7 +10,7 @@ export function LoadingSpinner({ size = 'default' }: { size?: 'sm' | 'default' |
   return (
     <div className="flex items-center justify-center">
       <div className={cn(
-        "animate-spin rounded-full border-2 border-gray-300 border-t-primary",
+        "animate-spin rounded-full border-2 border-border border-t-primary",
         sizeClass
       )} />
     </div>
@@ -19,7 +19,7 @@ export function LoadingSpinner({ size = 'default' }: { size?: 'sm' | 'default' |
 
 export function LoadingOverlay() {
   return (
-    <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-50">
+    <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm z-50">
       <LoadingSpinner size="lg" />
     </div>
   )

@@ -4,11 +4,12 @@ import { accountsApi } from '@/lib/api/endpoints'
 import { formatDate } from '@/lib/utils/formatters'
 
 interface PageProps {
-  params: { id: string }
+  params?: Promise<{ id: string }>
 }
 
 export default async function Page({ params }: PageProps) {
-  const accountId = Number(params.id)
+  const resolvedParams = await params
+  const accountId = Number(resolvedParams?.id ?? 0)
 
   let tradesData: Awaited<ReturnType<typeof accountsApi.getTrades>> | null = null
   try {

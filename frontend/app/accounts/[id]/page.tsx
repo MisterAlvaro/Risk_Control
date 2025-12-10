@@ -20,7 +20,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import Tabs, { TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { accountsApi, incidentsApi, tradesApi } from '@/lib/api/endpoints'
 import { 
   formatDate, 
@@ -90,9 +90,9 @@ export default function AccountDetailPage() {
   const riskLevel = riskStatus?.risk_level || 'low'
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       {/* Header */}
-      <div className="flex flex-col gap-4 rounded-2xl border border-border/70 bg-white/80 p-6 shadow-sm backdrop-blur md:flex-row md:items-center md:justify-between">
+      <div className="flex flex-col gap-6 rounded-2xl border border-border/70 bg-white/80 p-6 shadow-sm backdrop-blur md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" asChild>
             <Link href="/accounts">

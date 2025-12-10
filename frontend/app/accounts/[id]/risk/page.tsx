@@ -4,11 +4,14 @@ import { accountsApi } from '@/lib/api/endpoints'
 import { getRiskLevelColor } from '@/lib/utils/formatters'
 
 interface PageProps {
-  params: { id: string }
+  // Next's generated types may expect params wrapped in a Promise.
+  // Make params optional and Promise-wrapped to satisfy the generated checks.
+  params?: Promise<{ id: string }>
 }
 
 export default async function Page({ params }: PageProps) {
-  const accountId = Number(params.id)
+  const resolvedParams = await params
+  const accountId = Number(resolvedParams?.id ?? 0)
 
   let riskData: Awaited<ReturnType<typeof accountsApi.getRiskStatus>> | null = null
   try {

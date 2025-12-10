@@ -13,7 +13,8 @@ import {
   Package,
   User,
   ArrowUpRight,
-  ArrowDownRight
+  ArrowDownRight,
+  AlertTriangle
 } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -35,8 +36,8 @@ import { TRADE_STATUS, TRADE_TYPES } from '@/lib/utils/constants'
 export default function TradesPage() {
   const [filters, setFilters] = useState({
     search: '',
-    status: '',
-    type: '',
+    status: undefined,
+    type: undefined,
     account_id: undefined,
     from_date: '',
     to_date: '',
@@ -60,7 +61,7 @@ export default function TradesPage() {
   })
 
   const handleFilterChange = (key: string, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value, page: 1 }))
+    setFilters(prev => ({ ...prev, [key]: value === '__all__' ? undefined : value, page: 1 }))
   }
 
   const handlePageChange = (page: number) => {
@@ -93,29 +94,54 @@ export default function TradesPage() {
   const stats = calculateStats()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-12">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Trades</h1>
-          <p className="text-gray-600">
-            Historial completo de operaciones de trading
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline">
-            <Calendar className="mr-2 h-4 w-4" />
-            Exportar
-          </Button>
-        </div>
+      <div className="space-y-3">
+        <h1 className="text-5xl font-bold tracking-tight text-text">Trades</h1>
+        <p className="text-lg text-text/70">Historial completo de operaciones de trading y seguimiento</p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Total Trades"
+          value={stats.totalTrades}
+          icon={<TrendingUp className="h-6 w-6" />}
+          change={`${stats.openTrades} abiertos`}
+          color="primary"
+        />
+        <StatCard
+          title="Volumen Total"
+          value={formatNumber(stats.totalVolume)}
+          icon={<Package className="h-6 w-6" />}
+          change={`${stats.buyTrades} BUY, ${stats.sellTrades} SELL`}
+          color="primary"
+        />
+        <StatCard
+          title="Trades Cerrados"
+          value={stats.closedTrades}
+          icon={<DollarSign className="h-6 w-6" />}
+          change={`${stats.openTrades} aún abiertos`}
+          color="info"
+        />
+        <StatCard
+          title="Con Incidentes"
+          value={stats.tradesWithIncidents}
+          icon={<AlertTriangle className="h-6 w-6" />}
+          change={`${stats.totalTrades > 0 ? ((stats.tradesWithIncidents / stats.totalTrades) * 100).toFixed(1) : 0}% del total`}
+          color={stats.tradesWithIncidents > 0 ? 'warning' : 'primary'}
+        />
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardContent className="p-6">
+      <Card className="border border-border">
+        <CardHeader className="border-b border-border">
+          <CardTitle>Filtros</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
           <div className="grid gap-4 md:grid-cols-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text/50" />
               <Input
                 placeholder="Buscar por ID o cuenta..."
                 value={filters.search}
@@ -125,14 +151,14 @@ export default function TradesPage() {
             </div>
             
             <Select
-              value={filters.status}
+              value={filters.status ?? '__all__'}
               onValueChange={(value) => handleFilterChange('status', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Estado" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los estados</SelectItem>
+                <SelectItem value="__all__">Todos los estados</SelectItem>
                 {TRADE_STATUS.map((status) => (
                   <SelectItem key={status.value} value={status.value}>
                     {status.label}
@@ -142,14 +168,14 @@ export default function TradesPage() {
             </Select>
 
             <Select
-              value={filters.type}
+              value={filters.type ?? '__all__'}
               onValueChange={(value) => handleFilterChange('type', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los tipos</SelectItem>
+                <SelectItem value="__all__">Todos los tipos</SelectItem>
                 {TRADE_TYPES.map((type) => (
                   <SelectItem key={type.value} value={type.value}>
                     {type.label}
@@ -158,65 +184,32 @@ export default function TradesPage() {
               </SelectContent>
             </Select>
 
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={() => setFilters({
-                  search: '',
-                  status: '',
-                  type: '',
-                  account_id: undefined,
-                  from_date: '',
-                  to_date: '',
-                  page: 1,
-                })}
-              >
-                Limpiar Filtros
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={() => setFilters({
+                search: '',
+                status: undefined,
+                type: undefined,
+                account_id: undefined,
+                from_date: '',
+                to_date: '',
+                page: 1,
+              })}
+            >
+              Limpiar Filtros
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <StatCard
-          title="Total Trades"
-          value={stats.totalTrades}
-          icon={<TrendingUp className="h-5 w-5" />}
-          change={`${stats.openTrades} abiertos`}
-          color="blue"
-        />
-        <StatCard
-          title="Volumen Total"
-          value={formatNumber(stats.totalVolume)}
-          icon={<Package className="h-5 w-5" />}
-          change={`${stats.buyTrades} compras, ${stats.sellTrades} ventas`}
-          color="green"
-        />
-        <StatCard
-          title="Trades Cerrados"
-          value={stats.closedTrades}
-          icon={<DollarSign className="h-5 w-5" />}
-          change={`${stats.openTrades} aún abiertos`}
-          color="purple"
-        />
-        <StatCard
-          title="Con Incidentes"
-          value={stats.tradesWithIncidents}
-          icon={<User className="h-5 w-5" />}
-          change={`${((stats.tradesWithIncidents / stats.totalTrades) * 100).toFixed(1)}% del total`}
-          color={stats.tradesWithIncidents > 0 ? 'yellow' : 'gray'}
-        />
-      </div>
-
       {/* Trades Table */}
-      <Card>
-        <CardHeader>
+      <Card className="border border-border">
+        <CardHeader className="border-b border-border">
           <CardTitle>Lista de Trades</CardTitle>
+          <p className="text-sm text-text/70 mt-1">Detalle completo de todas las operaciones de trading</p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <ApiStatus
             isLoading={isLoading}
             error={error}
@@ -230,89 +223,101 @@ export default function TradesPage() {
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b">
-                      <th className="py-3 text-left text-sm font-medium text-gray-500">ID</th>
-                      <th className="py-3 text-left text-sm font-medium text-gray-500">Cuenta</th>
-                      <th className="py-3 text-left text-sm font-medium text-gray-500">Tipo</th>
-                      <th className="py-3 text-left text-sm font-medium text-gray-500">Volumen</th>
-                      <th className="py-3 text-left text-sm font-medium text-gray-500">Precios</th>
-                      <th className="py-3 text-left text-sm font-medium text-gray-500">Estado</th>
-                      <th className="py-3 text-left text-sm font-medium text-gray-500">Duración</th>
-                      <th className="py-3 text-left text-sm font-medium text-gray-500">Incidentes</th>
-                      <th className="py-3 text-left text-sm font-medium text-gray-500">Fecha</th>
-                      <th className="py-3 text-left text-sm font-medium text-gray-500">Acciones</th>
+                    <tr className="bg-surface/50 border-b border-border">
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text/70 uppercase tracking-wide">ID</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text/70 uppercase tracking-wide">Cuenta</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text/70 uppercase tracking-wide">Tipo</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text/70 uppercase tracking-wide">Volumen</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text/70 uppercase tracking-wide">Precios</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text/70 uppercase tracking-wide">Estado</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text/70 uppercase tracking-wide">Duración</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text/70 uppercase tracking-wide">Incidentes</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text/70 uppercase tracking-wide">Fecha</th>
+                      <th className="px-6 py-3 text-left text-xs font-semibold text-text/70 uppercase tracking-wide">Acciones</th>
                     </tr>
                   </thead>
-                  <tbody>
-                    {data?.data.map((trade) => (
-                      <tr key={trade.id} className="border-b hover:bg-gray-50">
-                        <td className="py-3 font-medium">#{trade.id}</td>
-                        <td className="py-3">
-                          <div className="flex items-center gap-2">
-                            <div className="font-medium">{trade.account_login}</div>
-                            <Button variant="ghost" size="sm" asChild className="h-6 w-6 p-0">
-                              <Link href={`/accounts/${trade.account_id}`}>
-                                <Eye className="h-3 w-3" />
-                              </Link>
-                            </Button>
-                          </div>
-                        </td>
-                        <td className="py-3">
-                          <Badge variant={trade.type === 'BUY' ? 'default' : 'outline'}>
-                            {trade.type === 'BUY' ? 'Compra' : 'Venta'}
-                          </Badge>
-                        </td>
-                        <td className="py-3">
-                          <div className="font-medium">{trade.volume} lots</div>
-                        </td>
-                        <td className="py-3">
-                          <div className="text-sm">
-                            <div>Apertura: {trade.open_price}</div>
-                            {trade.close_price && (
-                              <div>Cierre: {trade.close_price}</div>
-                            )}
-                          </div>
-                        </td>
-                        <td className="py-3">
-                          <Badge className={getStatusColor(trade.status)}>
-                            {trade.status === 'open' ? 'Abierto' : 'Cerrado'}
-                          </Badge>
-                        </td>
-                        <td className="py-3">
-                          {trade.duration_seconds 
-                            ? formatTradeDuration(trade.duration_seconds)
-                            : '-'}
-                        </td>
-                        <td className="py-3">
-                          {(trade.incidents_count || 0) > 0 ? (
-                            <Badge variant="destructive" className="bg-red-100 text-red-800">
-                              {trade.incidents_count}
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="bg-green-50 text-green-700">
-                              0
-                            </Badge>
-                          )}
-                        </td>
-                        <td className="py-3 text-sm text-gray-500">
-                          {formatDate(trade.open_time, 'dd/MM/yy')}
-                        </td>
-                        <td className="py-3">
-                          <Button variant="ghost" size="sm" asChild>
-                            <Link href={`/trades/${trade.id}`}>
-                              <Eye className="h-4 w-4" />
-                            </Link>
-                          </Button>
+                  <tbody className="divide-y divide-border">
+                    {data?.data.length === 0 ? (
+                      <tr>
+                        <td colSpan={10} className="px-6 py-12 text-center">
+                          <TrendingUp className="mx-auto h-12 w-12 text-text/30" />
+                          <h3 className="mt-4 text-lg font-semibold text-text">No hay trades</h3>
+                          <p className="mt-2 text-text/70">No se encontraron operaciones de trading con los filtros seleccionados</p>
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      data?.data.map((trade) => (
+                        <tr key={trade.id} className="border-border hover:bg-surface/40 transition-colors">
+                          <td className="px-6 py-4 font-semibold text-text">#{trade.id}</td>
+                          <td className="px-6 py-4">
+                            <div className="flex items-center gap-2">
+                              <div className="text-text font-medium">{trade.account_login}</div>
+                              <Button variant="ghost" size="sm" asChild className="h-6 w-6 p-0">
+                                <Link href={`/accounts/${trade.account_id}`} title="Ver cuenta">
+                                  <Eye className="h-3 w-3" />
+                                </Link>
+                              </Button>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <Badge 
+                              className={trade.type === 'BUY' ? 'bg-primary text-white' : 'bg-surface border border-border text-text'}
+                            >
+                              {trade.type === 'BUY' ? 'BUY' : 'SELL'}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="font-medium text-text">{trade.volume} lots</div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <div className="space-y-1 text-sm">
+                              <div className="text-text">Apertura: {trade.open_price}</div>
+                              {trade.close_price && (
+                                <div className="text-text/70">Cierre: {trade.close_price}</div>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4">
+                            <Badge className={getStatusColor(trade.status)}>
+                              {trade.status === 'open' ? 'Abierto' : 'Cerrado'}
+                            </Badge>
+                          </td>
+                          <td className="px-6 py-4 text-sm text-text">
+                            {trade.duration_seconds 
+                              ? formatTradeDuration(trade.duration_seconds)
+                              : '-'}
+                          </td>
+                          <td className="px-6 py-4">
+                            {(trade.incidents_count || 0) > 0 ? (
+                              <Badge className="bg-danger text-white">
+                                {trade.incidents_count}
+                              </Badge>
+                            ) : (
+                              <Badge className="bg-success text-white">
+                                0
+                              </Badge>
+                            )}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-text/70">
+                            {formatDate(trade.open_time, 'dd/MM/yy')}
+                          </td>
+                          <td className="px-6 py-4">
+                            <Button variant="ghost" size="sm" asChild>
+                              <Link href={`/trades/${trade.id}`} title="Ver detalles">
+                                <Eye className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                          </td>
+                        </tr>
+                      ))
+                    )}
                   </tbody>
                 </table>
               </div>
 
               {/* Pagination */}
               {data && data.meta.last_page > 1 && (
-                <div className="mt-6">
+                <div className="border-t border-border px-6 py-4">
                   <Pagination
                     currentPage={data.meta.current_page}
                     totalPages={data.meta.last_page}
@@ -333,52 +338,61 @@ function StatCard({
   value,
   icon,
   change,
-  color = 'blue',
+  color = 'primary',
 }: {
   title: string
   value: string | number
   icon: React.ReactNode
   change: string
-  color: 'blue' | 'red' | 'green' | 'yellow' | 'purple' | 'gray'
+  color?: 'primary' | 'danger' | 'warning' | 'info'
 }) {
-  const colorClasses = {
-    blue: 'bg-blue-100 text-blue-600',
-    red: 'bg-red-100 text-red-600',
-    green: 'bg-green-100 text-green-600',
-    yellow: 'bg-yellow-100 text-yellow-600',
-    purple: 'bg-purple-100 text-purple-600',
-    gray: 'bg-gray-100 text-gray-600',
-  }
-
-  const isPositive = !change.includes('-')
+  const colorConfig = {
+    primary: {
+      bg: 'bg-gradient-to-br from-primary/10 to-primary/5',
+      border: 'border-primary/20',
+      icon: 'bg-primary text-white',
+      text: 'text-primary',
+      label: 'text-primary/80'
+    },
+    danger: {
+      bg: 'bg-gradient-to-br from-danger/10 to-danger/5',
+      border: 'border-danger/20',
+      icon: 'bg-danger text-white',
+      text: 'text-danger',
+      label: 'text-danger/80'
+    },
+    warning: {
+      bg: 'bg-gradient-to-br from-warning/10 to-warning/5',
+      border: 'border-warning/20',
+      icon: 'bg-warning text-white',
+      text: 'text-warning',
+      label: 'text-warning/80'
+    },
+    info: {
+      bg: 'bg-gradient-to-br from-info/10 to-info/5',
+      border: 'border-info/20',
+      icon: 'bg-info text-white',
+      text: 'text-info',
+      label: 'text-info/80'
+    },
+  }[color]
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-gray-600">{title}</p>
-            <p className="mt-2 text-3xl font-bold text-gray-900">{value}</p>
-            <div className="mt-2 flex items-center text-sm">
-              {change && (
-                <>
-                  {isPositive ? (
-                    <ArrowUpRight className="mr-1 h-4 w-4 text-green-500" />
-                  ) : (
-                    <ArrowDownRight className="mr-1 h-4 w-4 text-red-500" />
-                  )}
-                  <span className={isPositive ? 'text-green-600' : 'text-red-600'}>
-                    {change}
-                  </span>
-                </>
-              )}
-            </div>
-          </div>
-          <div className={`rounded-lg p-3 ${colorClasses[color]}`}>
-            {icon}
-          </div>
+    <div className={`group rounded-xl border-2 p-6 transition-all duration-300 hover:shadow-lg hover:border-opacity-100 ${colorConfig.bg} ${colorConfig.border}`}>
+      <div className="flex items-center justify-between">
+        <div className="flex-1">
+          <p className={`text-xs font-bold uppercase tracking-widest ${colorConfig.label}`}>{title}</p>
+          <p className={`mt-2 text-4xl font-bold ${colorConfig.text}`}>{value}</p>
+          {change && (
+            <p className="mt-2 text-sm text-text/70">
+              {change}
+            </p>
+          )}
         </div>
-      </CardContent>
-    </Card>
+        <div className={`rounded-2xl p-4 ${colorConfig.icon} shadow-lg transform transition-transform group-hover:scale-110`}>
+          {icon}
+        </div>
+      </div>
+    </div>
   )
 }

@@ -33,7 +33,7 @@ import { INCIDENT_STATUS } from '@/lib/utils/constants'
 
 type IncidentFilters = {
   search: string
-  status: string
+  status?: string
   account_id?: number
   risk_rule_id?: number
   sort_by: string
@@ -44,7 +44,7 @@ type IncidentFilters = {
 export default function IncidentsPage() {
   const [filters, setFilters] = useState<IncidentFilters>({
     search: '',
-    status: '',
+    status: undefined,
     account_id: undefined,
     risk_rule_id: undefined,
     sort_by: 'created_at',
@@ -58,7 +58,7 @@ export default function IncidentsPage() {
   })
 
   const handleFilterChange = (key: keyof IncidentFilters, value: any) => {
-    setFilters(prev => ({ ...prev, [key]: value, page: 1 }))
+    setFilters(prev => ({ ...prev, [key]: value === '__all__' ? undefined : value, page: 1 }))
   }
 
   const handlePageChange = (page: number) => {
@@ -71,30 +71,44 @@ export default function IncidentsPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-12">
       {/* Header */}
-      <div className="flex flex-col gap-3 rounded-2xl border border-border/70 bg-white/80 p-6 shadow-sm backdrop-blur md:flex-row md:items-center md:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary/80">Monitoreo</p>
-          <h1 className="text-3xl font-bold tracking-tight">Incidentes</h1>
-          <p className="text-muted-foreground">
-            Monitorice y gestione violaciones de reglas
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="lg" onClick={() => refetch()}>
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Actualizar
-          </Button>
-        </div>
+      <div className="space-y-3">
+        <h1 className="text-5xl font-bold tracking-tight text-text">Incidentes</h1>
+        <p className="text-lg text-text/70">Monitorice y gestione violaciones de reglas en tiempo real</p>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <StatCard
+          title="Pendientes"
+          value={data?.data.filter(i => i.status === 'pending').length || 0}
+          icon={<AlertTriangle className="h-6 w-6" />}
+          color="warning"
+        />
+        <StatCard
+          title="Procesados"
+          value={data?.data.filter(i => i.status === 'processed').length || 0}
+          icon={<CheckCircle className="h-6 w-6" />}
+          color="primary"
+        />
+        <StatCard
+          title="Acciones Ejecutadas"
+          value={data?.data.filter(i => i.status === 'action_executed').length || 0}
+          icon={<Shield className="h-6 w-6" />}
+          color="danger"
+        />
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardContent className="p-6">
+      <Card className="border border-border">
+        <CardHeader className="border-b border-border">
+          <CardTitle>Filtros</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-6">
           <div className="grid gap-4 md:grid-cols-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text/50" />
               <Input
                 placeholder="Buscar incidentes..."
                 value={filters.search}
@@ -102,16 +116,16 @@ export default function IncidentsPage() {
                 className="pl-9"
               />
             </div>
-            
+
             <Select
-              value={filters.status}
+              value={filters.status ?? '__all__'}
               onValueChange={(value) => handleFilterChange('status', value)}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Estado" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Todos los estados</SelectItem>
+                <SelectItem value="__all__">Todos los estados</SelectItem>
                 {INCIDENT_STATUS.map((status) => (
                   <SelectItem key={status.value} value={status.value}>
                     {status.label}
@@ -150,37 +164,19 @@ export default function IncidentsPage() {
         </CardContent>
       </Card>
 
-      {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <StatCard
-          title="Pendientes"
-          value={data?.data.filter(i => i.status === 'pending').length || 0}
-          icon={<AlertTriangle className="h-5 w-5" />}
-          color="yellow"
-        />
-        <StatCard
-          title="Procesados"
-          value={data?.data.filter(i => i.status === 'processed').length || 0}
-          icon={<CheckCircle className="h-5 w-5" />}
-          color="blue"
-        />
-        <StatCard
-          title="Acciones Ejecutadas"
-          value={data?.data.filter(i => i.status === 'action_executed').length || 0}
-          icon={<Shield className="h-5 w-5" />}
-          color="red"
-        />
-      </div>
-
       {/* Incidents List */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+      <Card className="border border-border">
+        <CardHeader className="border-b border-border flex flex-row items-center justify-between">
           <div>
             <CardTitle>Lista de Incidentes</CardTitle>
-            <p className="text-sm text-muted-foreground">Detalle de reglas violadas y estados</p>
+            <p className="text-sm text-text/70 mt-1">Violaciones de reglas detectadas y estado actual</p>
           </div>
+          <Button variant="outline" size="default" onClick={() => refetch()}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Actualizar
+          </Button>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0">
           <ApiStatus
             isLoading={isLoading}
             error={error}
@@ -191,14 +187,14 @@ export default function IncidentsPage() {
 
           {!isLoading && !error && (
             <>
-              <div className="space-y-4">
+              <div className="divide-y divide-border">
                 {data?.data.length === 0 ? (
-                  <div className="rounded-lg border border-dashed border-border/80 bg-muted/60 py-12 text-center">
-                    <AlertTriangle className="mx-auto h-12 w-12 text-gray-400" />
-                    <h3 className="mt-4 text-lg font-semibold text-gray-900">
+                  <div className="px-6 py-12 text-center">
+                    <Shield className="mx-auto h-12 w-12 text-text/30" />
+                    <h3 className="mt-4 text-lg font-semibold text-text">
                       No hay incidentes
                     </h3>
-                    <p className="mt-2 text-gray-600">
+                    <p className="mt-2 text-text/70">
                       No se han detectado violaciones de reglas
                     </p>
                   </div>
@@ -215,7 +211,7 @@ export default function IncidentsPage() {
 
               {/* Pagination */}
               {data && data.meta.last_page > 1 && (
-                <div className="mt-6">
+                <div className="border-t border-border px-6 py-4">
                   <Pagination
                     currentPage={data.meta.current_page}
                     totalPages={data.meta.last_page}
@@ -235,34 +231,49 @@ function StatCard({
   title,
   value,
   icon,
-  color = 'blue',
+  color = 'primary',
 }: {
   title: string
   value: number
   icon: React.ReactNode
-  color: 'blue' | 'red' | 'green' | 'yellow'
+  color?: 'primary' | 'danger' | 'warning'
 }) {
-  const colorClasses = {
-    blue: 'bg-blue-100 text-blue-600',
-    red: 'bg-red-100 text-red-600',
-    green: 'bg-green-100 text-green-600',
-    yellow: 'bg-yellow-100 text-yellow-600',
-  }
+  const colorConfig = {
+    primary: {
+      bg: 'bg-gradient-to-br from-primary/10 to-primary/5',
+      border: 'border-primary/20',
+      icon: 'bg-primary text-white',
+      text: 'text-primary',
+      label: 'text-primary/80'
+    },
+    danger: {
+      bg: 'bg-gradient-to-br from-danger/10 to-danger/5',
+      border: 'border-danger/20',
+      icon: 'bg-danger text-white',
+      text: 'text-danger',
+      label: 'text-danger/80'
+    },
+    warning: {
+      bg: 'bg-gradient-to-br from-warning/10 to-warning/5',
+      border: 'border-warning/20',
+      icon: 'bg-warning text-white',
+      text: 'text-warning',
+      label: 'text-warning/80'
+    },
+  }[color]
 
   return (
-    <Card>
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-gray-600">{title}</p>
-            <p className="mt-2 text-3xl font-bold text-gray-900">{value}</p>
-          </div>
-          <div className={`rounded-lg p-3 ${colorClasses[color]}`}>
-            {icon}
-          </div>
+    <div className={`group rounded-xl border-2 p-6 transition-all duration-300 hover:shadow-lg hover:border-opacity-100 ${colorConfig.bg} ${colorConfig.border}`}>
+      <div className="flex items-center justify-between">
+        <div className="flex-1">
+          <p className={`text-xs font-bold uppercase tracking-widest ${colorConfig.label}`}>{title}</p>
+          <p className={`mt-2 text-4xl font-bold ${colorConfig.text}`}>{value}</p>
         </div>
-      </CardContent>
-    </Card>
+        <div className={`rounded-2xl p-4 ${colorConfig.icon} shadow-lg transform transition-transform group-hover:scale-110`}>
+          {icon}
+        </div>
+      </div>
+    </div>
   )
 }
 

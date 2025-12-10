@@ -1,8 +1,7 @@
-import { useApi } from "./use-api";
-import { apiClient } from "../api/client";
-import { endpoints } from "../api/endpoints";
+import { useApi } from './use-api'
+import { riskRulesApi } from '../api/endpoints'
 
 export function useRiskRules() {
-  return useApi(() => apiClient(endpoints.rules));
+  return useApi(() => riskRulesApi.getAll())
 }
 

@@ -1,8 +1,7 @@
-import { useApi } from "./use-api";
-import { apiClient } from "../api/client";
-import { endpoints } from "../api/endpoints";
+import { useApi } from './use-api'
+import { incidentsApi } from '../api/endpoints'
 
 export function useIncidents() {
-  return useApi(() => apiClient(endpoints.incidents));
+  return useApi(() => incidentsApi.getAll())
 }
 
