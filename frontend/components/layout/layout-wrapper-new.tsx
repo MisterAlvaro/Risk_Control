@@ -4,13 +4,13 @@ import SidebarHero from './sidebar.heroui'
 
 export default function LayoutWrapper({ children }: PropsWithChildren) {
   return (
-    <div className="min-h-screen bg-background text-text">
+    <div className="min-h-screen bg-[color:var(--background)] text-[color:var(--foreground)]">
       <Header />
       <div className="flex">
-  <SidebarHero />
+        <SidebarHero />
         <main className="flex-1 overflow-hidden">
           <div className="h-[calc(100vh-4rem)] overflow-y-auto">
-            <div className="p-8 max-w-[1600px] mx-auto">
+            <div className="px-12 py-8 max-w-[1600px] mx-auto">
               {children}
             </div>
           </div>
@@ -19,4 +19,3 @@ export default function LayoutWrapper({ children }: PropsWithChildren) {
     </div>
   )
 }
-

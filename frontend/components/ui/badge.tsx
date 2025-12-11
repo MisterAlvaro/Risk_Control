@@ -9,12 +9,12 @@ function Badge({ className, variant = 'default', ...props }: BadgeProps) {
   return (
     <div
       className={cn(
-        'inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 shadow-sm',
+        'inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wider transition-colors duration-200 focus:outline-none',
         {
-          'border-primary/40 bg-gradient-to-r from-primary/15 to-primary/10 text-primary hover:from-primary/20 hover:to-primary/15 hover:shadow-md': variant === 'default',
-          'border-surface bg-surface text-text hover:bg-surface/80 hover:shadow-sm': variant === 'secondary',
-          'border-danger/40 bg-gradient-to-r from-danger/15 to-danger/10 text-danger hover:from-danger/20 hover:to-danger/15 hover:shadow-md': variant === 'destructive',
-          'border border-border/40 text-text/80 bg-surface/30 hover:bg-surface/50 hover:border-border/60': variant === 'outline',
+          'border-[color:var(--primary)]/30 bg-[color:var(--primary)]/10 text-[color:var(--primary)] hover:bg-[color:var(--primary)]/15': variant === 'default',
+          'border-[color:var(--border)] bg-[color:var(--card)] text-[color:var(--foreground)] hover:bg-[color:var(--muted)]': variant === 'secondary',
+          'border-[#ef4444]/30 bg-[#ef4444]/10 text-[#ef4444] hover:bg-[#ef4444]/15': variant === 'destructive',
+          'border border-[color:var(--border)] text-[color:var(--muted-foreground)] bg-[color:var(--muted)]/30 hover:bg-[color:var(--muted)]/50': variant === 'outline',
         },
         className
       )}
@@ -24,4 +24,3 @@ function Badge({ className, variant = 'default', ...props }: BadgeProps) {
 }
 
 export { Badge }
-

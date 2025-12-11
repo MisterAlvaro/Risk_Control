@@ -18,17 +18,20 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // Maintain same behavior when rendering as child; no debug logs in production
 
     const baseClass = cn(
-      'inline-flex items-center justify-center whitespace-nowrap rounded-md border text-sm font-semibold transition-all duration-300 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 shadow-sm active:scale-95',
+      'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-semibold transition ease-in-out duration-200 focus:outline-none disabled:pointer-events-none disabled:opacity-60',
       {
-        'bg-primary text-white border-transparent hover:bg-primary-dark hover:shadow-md hover:scale-105': variant === 'default',
-        'bg-surface text-text border border-border hover:shadow-md hover:bg-surface': variant === 'secondary',
-        'bg-danger text-white border-transparent hover:bg-danger/90 hover:shadow-md hover:scale-105': variant === 'destructive',
-        'border border-border bg-transparent hover:bg-surface hover:border-border/50': variant === 'outline',
-        'border-transparent bg-transparent hover:bg-primary-light/10 text-text hover:text-primary-dark': variant === 'ghost',
-        'border-transparent bg-transparent text-primary underline-offset-4 hover:underline': variant === 'link',
-        'h-11 px-4 py-2.5': size === 'default',
-        'h-9 rounded-sm px-3': size === 'sm',
-        'h-11 rounded-lg px-8': size === 'lg',
+        // primary: subtle solid with soft shadow on hover
+  'bg-[color:var(--primary)] text-[color:var(--primary-foreground)] border border-transparent hover:shadow-sm': variant === 'default',
+        // secondary: neutral surface
+        'bg-[color:var(--card)] text-[color:var(--foreground)] border border-[color:var(--border)] hover:shadow-sm': variant === 'secondary',
+        'bg-[#ef4444] text-white border-transparent hover:opacity-95': variant === 'destructive',
+        'border border-[color:var(--border)] bg-transparent hover:bg-[color:var(--muted)]/40': variant === 'outline',
+        'bg-transparent text-[color:var(--foreground)] hover:bg-[color:var(--muted)]/20': variant === 'ghost',
+        'bg-transparent text-[color:var(--primary)] underline-offset-4 hover:underline': variant === 'link',
+        // sizes
+        'h-10 px-4': size === 'default',
+        'h-8 px-3 text-sm': size === 'sm',
+        'h-12 px-6': size === 'lg',
         'h-10 w-10 p-0': size === 'icon',
       },
       className
@@ -36,7 +39,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 
     const spinner = isLoading ? (
       <svg className="mr-2 h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
       </svg>
     ) : null

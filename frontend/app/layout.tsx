@@ -1,23 +1,27 @@
-import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
-import './globals.css'
+import type React from "react"
+import type { Metadata } from "next"
+import { Inter, Geist_Mono } from "next/font/google"
+import "./globals.css"
 import { QueryProvider } from '@/components/providers/query-provider'
 import LayoutWrapper from '@/components/layout/layout-wrapper'
 
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-})
+const _inter = Inter({ subsets: ["latin"] })
+const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: 'Risk Control System',
-  description: 'Risk Control dashboard and management',
+  title: "RiskControl - Panel de Monitoreo",
+  description: "Sistema de monitoreo general de riesgo y actividad del sistema",
+  generator: " ",
 }
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode
+}>) {
   return (
-    <html lang="en">
-      <body className={`${inter.variable} font-sans antialiased bg-background text-foreground`}> 
+    <html lang="es">
+      <body className={`${_inter.className} ${_geistMono.className} font-sans antialiased`}>
         <QueryProvider>
           <LayoutWrapper>{children}</LayoutWrapper>
         </QueryProvider>

@@ -140,13 +140,13 @@ export default function TradesPage() {
         </CardHeader>
         <CardContent className="pt-6">
           <div className="grid gap-4 md:grid-cols-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text/50" />
+            <div className="flex items-center">
+              <Search aria-hidden="true" className="h-4 w-4 mr-3 text-text/50" />
               <Input
                 placeholder="Buscar por ID o cuenta..."
                 value={filters.search}
                 onChange={(e) => handleFilterChange('search', e.target.value)}
-                className="pl-9"
+                className="flex-1"
               />
             </div>
             
